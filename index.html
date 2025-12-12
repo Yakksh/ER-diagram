@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ER Diagram Visualization</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: white;
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .header {
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #cbd5e1;
+            font-size: 1em;
+        }
+
+        .diagram-container {
+            position: relative;
+            width: 1000px;
+            height: 900px;
+            margin: 0 auto;
+        }
+
+        svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+
+        .entity {
+            position: absolute;
+            width: 160px;
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .entity:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.5);
+            z-index: 10;
+        }
+
+        .entity-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .entity-icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        .entity-name {
+            font-weight: bold;
+            font-size: 11px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .entity-fields {
+            display: none;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 4px;
+            padding: 8px;
+            margin-top: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+        }
+
+        .entity:hover .entity-fields {
+            display: block;
+        }
+
+        .field {
+            padding: 2px 0;
+        }
+
+        /* Entity Colors */
+        .color-blue { background-color: #3b82f6; }
+        .color-purple { background-color: #a855f7; }
+        .color-indigo { background-color: #6366f1; }
+        .color-green { background-color: #22c55e; }
+        .color-emerald { background-color: #10b981; }
+        .color-orange { background-color: #f97316; }
+        .color-amber { background-color: #f59e0b; }
+        .color-cyan { background-color: #06b6d4; }
+        .color-sky { background-color: #0ea5e9; }
+        .color-blue-light { background-color: #60a5fa; }
+        .color-pink { background-color: #ec4899; }
+        .color-rose { background-color: #f43f5e; }
+        .color-red { background-color: #ef4444; }
+        .color-violet { background-color: #8b5cf6; }
+        .color-purple-dark { background-color: #9333ea; }
+        .color-fuchsia { background-color: #d946ef; }
+        .color-slate { background-color: #64748b; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Database ER Diagram</h1>
+        <p>Hover over entities to see their fields</p>
+    </div>
+
+    <div class="diagram-container">
+        <svg width="1000" height="900">
+            <line x1="475" y1="70" x2="325" y2="170" stroke="#475569" stroke-width="2" stroke-dasharray="5,5"/>
+            <line x1="175" y1="70" x2="325" y2="170" stroke="#475569" stroke-width="2" stroke-dasharray="5,5"/>
+            <line x1="175" y1="70" x2="175" y2="370" stroke="#475569" stroke-width="2" stroke-dasharray="5,5"/>
+            <line x1="175" y1="270" x2="175" y2="370" stroke="#475569" stroke-width="2" stroke-dasharray="5,5"/>
+            <line x1="475" y1="70" x2="475" y2="220" stroke="#475569" stroke-width="2" stroke-dasharray="5,5"/>
+            <line x1="475" y1="220" x2="325" y2="320" stroke="#475569" stroke-width="2" stroke-dasharray="5,5"/>
+            <line x1="475" y1="220" x2="625" y2="320" stroke="#475569" stroke-width="2" stroke-dasharray="5,5"/>
+            <line x1="625" y1="320" x2="775" y2="220" stroke="#475569" stroke-width="2" stroke-dasharray="5,5"/>
+            <line x1="775" y1="220" x2="925" y2="120" stroke="#475569" stroke-width="2" stroke-dasharray="5,5"/>
+            <line x1="775" y1="220" x2="775" y2="370" stroke="#475569" stroke-width="2" stroke-dasharray="5,5"/>
+            <line x1="775" y1="370" x2="925" y2="470" stroke="#475569" stroke-width="2" stroke-dasharray="5,5"/>
+            <line x1="775" y1="370" x2="625" y2="520" stroke="#475569" stroke-width="2" stroke-dasharray="5,5"/>
+            <line x1="625" y1="520" x2="425" y2="620" stroke="#475569" stroke-width="2" stroke-dasharray="5,5"/>
+            <line x1="625" y1="520" x2="775" y2="620" stroke="#475569" stroke-width="2" stroke-dasharray="5,5"/>
+            <line x1="625" y1="520" x2="625" y2="720" stroke="#475569" stroke-width="2" stroke-dasharray="5,5"/>
+            <line x1="175" y1="70" x2="425" y2="620" stroke="#475569" stroke-width="2" stroke-dasharray="5,5"/>
+            <line x1="475" y1="70" x2="475" y2="820" stroke="#475569" stroke-width="2" stroke-dasharray="5,5"/>
+        </svg>
+
+        <div class="entity color-blue" style="left: 400px; top: 50px;">
+            <div class="entity-header">
+                <svg class="entity-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+                <div class="entity-name">ORGANIZATION</div>
+            </div>
+            <div class="entity-fields">
+                <div class="field">id (PK)</div>
+                <div class="field">name</div>
+                <div class="field">created_at</div>
+            </div>
+        </div>
+
+        <div class="entity color-purple" style="left: 100px; top: 50px;">
+            <div class="entity-header">
+                <svg class="entity-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                <div class="entity-name">USER</div>
+            </div>
+            <div class="entity-fields">
+                <div class="field">id (PK)</div>
+                <div class="field">email</div>
+                <div class="field">name</div>
+                <div class="field">email_verified</div>
+                <div class="field">created_at</div>
+            </div>
+        </div>
+
+        <div class="entity color-indigo" style="left: 250px; top: 150px;">
+            <div class="entity-header">
+                <svg class="entity-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                <div class="entity-name">USER_ORG_MEMBERSHIP</div>
+            </div>
+            <div class="entity-fields">
+                <div class="field">id (PK)</div>
+                <div class="field">user_id (FK)</div>
+                <div class="field">organization_id (FK)</div>
+                <div class="field">role</div>
+                <div class="field">created_at</div>
+            </div>
+        </div>
+
+        <div class="entity color-green" style="left: 100px; top: 250px;">
+            <div class="entity-header">
+                <svg class="entity-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M12.65 10C11.7 7.31 8.9 5.5 5.77 6.12c-2.29.46-4.15 2.29-4.63 4.58C.32 14.57 3.26 18 7 18c2.61 0 4.83-1.67 5.65-4H17v2c0 1.1.9 2 2 2s2-.9 2-2v-2c1.1 0 2-.9 2-2s-.9-2-2-2h-8.35z"/></svg>
+                <div class="entity-name">OAUTH_PROVIDER</div>
+            </div>
+            <div class="entity-fields">
+                <div class="field">id (PK)</div>
+                <div class="field">key</div>
+                <div class="field">display_name</div>
+            </div>
+        </div>
+
+        <div class="entity color-emerald" style="left: 100px; top: 350px;">
+            <div class="entity-header">
+                <svg class="entity-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M12.65 10C11.7 7.31 8.9 5.5 5.77 6.12c-2.29.46-4.15 2.29-4.63 4.58C.32 14.57 3.26 18 7 18c2.61 0 4.83-1.67 5.65-4H17v2c0 1.1.9 2 2 2s2-.9 2-2v-2c1.1 0 2-.9 2-2s-.9-2-2-2h-8.35z"/></svg>
+                <div class="entity-name">USER_OAUTH_ACCOUNT</div>
+            </div>
+            <div class="entity-fields">
+                <div class="field">id (PK)</div>
+                <div class="field">user_id (FK)</div>
+                <div class="field">oauth_provider_id (FK)</div>
+                <div class="field">provider_account_id</div>
+                <div class="field">profile_data</div>
+                <div class="field">connected_at</div>
+            </div>
+        </div>
+
+        <div class="entity color-orange" style="left: 400px; top: 200px;">
+            <div class="entity-header">
+                <svg class="entity-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M17.5 4.5c-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5-1.45 0-2.99.22-4.28.79C1.49 5.62 1 6.33 1 7.14v11.28c0 1.3 1.22 2.26 2.48 1.94.98-.25 2.02-.36 3.02-.36 1.56 0 3.22.26 4.56.92.6.3 1.28.3 1.87 0 1.34-.67 3-.92 4.56-.92 1 0 2.04.11 3.02.36 1.26.33 2.48-.63 2.48-1.94V7.14c0-.81-.49-1.52-1.22-1.85-1.28-.57-2.82-.79-4.27-.79zM21 17.23c0 .63-.58 1.09-1.2.98-.75-.14-1.53-.2-2.3-.2-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5.92 0 1.83.09 2.7.28.46.1.8.51.8.98v9.47z"/></svg>
+                <div class="entity-name">INTEGRATION</div>
+            </div>
+            <div class="entity-fields">
+                <div class="field">id (PK)</div>
+                <div class="field">organization_id (FK)</div>
+                <div class="field">oauth_provider_id (FK)</div>
+                <div class="field">external_account_id</div>
+                <div class="field">config</div>
+                <div class="field">enabled</div>
+                <div class="field">connected_at</div>
+            </div>
+        </div>
+
+        <div class="entity color-amber" style="left: 250px; top: 300px;">
+            <div class="entity-header">
+                <svg class="entity-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M12.65 10C11.7 7.31 8.9 5.5 5.77 6.12c-2.29.46-4.15 2.29-4.63 4.58C.32 14.57 3.26 18 7 18c2.61 0 4.83-1.67 5.65-4H17v2c0 1.1.9 2 2 2s2-.9 2-2v-2c1.1 0 2-.9 2-2s-.9-2-2-2h-8.35z"/></svg>
+                <div class="entity-name">INTEGRATION_OAUTH_TOKEN</div>
+            </div>
+            <div class="entity-fields">
+                <div class="field">id (PK)</div>
+                <div class="field">integration_id (FK)</div>
+                <div class="field">token_encrypted</div>
+                <div class="field">refresh_token_encrypted</div>
+                <div class="field">expires_at</div>
+                <div class="field">created_at</div>
+            </div>
+        </div>
+
+        <div class="entity color-cyan" style="left: 550px; top: 300px;">
+            <div class="entity-header">
+                <svg class="entity-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10z"/></svg>
+                <div class="entity-name">MEETING_SOURCE</div>
+            </div>
+            <div class="entity-fields">
+                <div class="field">id (PK)</div>
+                <div class="field">integration_id (FK)</div>
+                <div class="field">external_meeting_id</div>
+                <div class="field">meeting_time</div>
+                <div class="field">metadata</div>
+                <div class="field">imported_at</div>
+            </div>
+        </div>
+
+        <div class="entity color-sky" style="left: 700px; top: 200px;">
+            <div class="entity-header">
+                <svg class="entity-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                <div class="entity-name">MEETING_TRANSCRIPT</div>
+            </div>
+            <div class="entity-fields">
+                <div class="field">id (PK)</div>
+                <div class="field">meeting_source_id (FK)</div>
+                <div class="field">language</div>
+                <div class="field">duration_ms</div>
+                <div class="field">transcript_hash</div>
+                <div class="field">raw_payload</div>
+                <div class="field">imported_at</div>
+            </div>
+        </div>
+
+        <div class="entity color-blue-light" style="left: 850px; top: 100px;">
+            <div class="entity-header">
+                <svg class="entity-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                <div class="entity-name">TRANSCRIPT_SEGMENT</div>
+            </div>
+            <div class="entity-fields">
+                <div class="field">id (PK)</div>
+                <div class="field">meeting_transcript_id (FK)</div>
+                <div class="field">speaker</div>
+                <div class="field">start_ms</div>
+                <div class="field">end_ms</div>
+                <div class="field">text</div>
+            </div>
+        </div>
+
+        <div class="entity color-pink" style="left: 700px; top: 350px;">
+            <div class="entity-header">
+                <svg class="entity-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/></svg>
+                <div class="entity-name">LLM_JOB</div>
+            </div>
+            <div class="entity-fields">
+                <div class="field">id (PK)</div>
+                <div class="field">meeting_transcript_id (FK)</div>
+                <div class="field">requested_by_user_id (FK)</div>
+                <div class="field">model_name</div>
+                <div class="field">prompt_template</div>
+                <div class="field">input_snapshot</div>
+                <div class="field">output_snapshot</div>
+                <div class="field">status</div>
+                <div class="field">requested_at</div>
+                <div class="field">completed_at</div>
+            </div>
+        </div>
+
+        <div class="entity color-rose" style="left: 850px; top: 450px;">
+            <div class="entity-header">
+                <svg class="entity-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                <div class="entity-name">ACTION_ITEM_SUGGESTION</div>
+            </div>
+            <div class="entity-fields">
+                <div class="field">id (PK)</div>
+                <div class="field">llm_job_id (FK)</div>
+                <div class="field">title</div>
+                <div class="field">description</div>
+                <div class="field">confidence</div>
+                <div class="field">extra</div>
+            </div>
+        </div>
+
+        <div class="entity color-red" style="left: 550px; top: 500px;">
+            <div class="entity-header">
+                <svg class="entity-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                <div class="entity-name">ACTION_ITEM</div>
+            </div>
+            <div class="entity-fields">
+                <div class="field">id (PK)</div>
+                <div class="field">organization_id (FK)</div>
+                <div class="field">meeting_transcript_id (FK)</div>
+                <div class="field">llm_job_id (FK)</div>
+                <div class="field">title</div>
+                <div class="field">description</div>
+                <div class="field">status</div>
+                <div class="field">confidence</div>
+                <div class="field">created_at</div>
+                <div class="field">updated_at</div>
+            </div>
+        </div>
+
+        <div class="entity color-violet" style="left: 350px; top: 600px;">
+            <div class="entity-header">
+                <svg class="entity-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                <div class="entity-name">ACTION_ITEM_ASSIGNMENT</div>
+            </div>
+            <div class="entity-fields">
+                <div class="field">id (PK)</div>
+                <div class="field">action_item_id (FK)</div>
+                <div class="field">user_id (FK)</div>
+                <div class="field">assignee_email</div>
+                <div class="field">assigned_at</div>
+                <div class="field">active</div>
+            </div>
+        </div>
+
+        <div class="entity color-purple-dark" style="left: 700px; top: 600px;">
+            <div class="entity-header">
+                <svg class="entity-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M17.5 4.5c-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5-1.45 0-2.99.22-4.28.79C1.49 5.62 1 6.33 1 7.14v11.28c0 1.3 1.22 2.26 2.48 1.94.98-.25 2.02-.36 3.02-.36 1.56 0 3.22.26 4.56.92.6.3 1.28.3 1.87 0 1.34-.67 3-.92 4.56-.92 1 0 2.04.11 3.02.36 1.26.33 2.48-.63 2.48-1.94V7.14c0-.81-.49-1.52-1.22-1.85-1.28-.57-2.82-.79-4.27-.79zM21 17.23c0 .63-.58 1.09-1.2.98-.75-.14-1.53-.2-2.3-.2-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5.92 0 1.83.09 2.7.28.46.1.8.51.8.98v9.47z"/></svg>
+                <div class="entity-name">LINEAR_ISSUE</div>
+            </div>
+            <div class="entity-fields">
+                <div class="field">id (PK)</div>
+                <div class="field">action_item_id (FK)</div>
+                <div class="field">linear_issue_id</div>
+                <div class="field">url</div>
+                <div class="field">payload_sent</div>
+                <div class="field">response_received</div>
+                <div class="field">pushed_at</div>
+            </div>
+        </div>
+
+        <div class="entity color-fuchsia" style="left: 550px; top: 700px;">
+            <div class="entity-header">
+                <svg class="entity-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M13 2.05v3.03c3.39.49 6 3.39 6 6.92 0 .9-.18 1.75-.48 2.54l2.6 1.53c.56-1.24.88-2.62.88-4.07 0-5.18-3.95-9.45-9-9.95zM12 19c-3.87 0-7-3.13-7-7 0-3.53 2.61-6.43 6-6.92V2.05c-5.06.5-9 4.76-9 9.95 0 5.52 4.47 10 9.99 10 3.31 0 6.24-1.61 8.06-4.09l-2.6-1.53C16.17 17.98 14.21 19 12 19z"/></svg>
+                <div class="entity-name">PUSH_EVENT</div>
+            </div>
+            <div class="entity-fields">
+                <div class="field">id (PK)</div>
+                <div class="field">action_item_id (FK)</div>
+                <div class="field">integration_id (FK)</div>
+                <div class="field">status</div>
+                <div class="field">error_message</div>
+                <div class="field">request_payload</div>
+                <div class="field">response_payload</div>
+                <div class="field">created_at</div>
+            </div>
+        </div>
+
+        <div class="entity color-slate" style="left: 400px; top: 800px;">
+            <div class="entity-header">
+                <svg class="entity-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M13 2.05v3.03c3.39.49 6 3.39 6 6.92 0 .9-.18 1.75-.48 2.54l2.6 1.53c.56-1.24.88-2.62.88-4.07 0-5.18-3.95-9.45-9-9.95zM12 19c-3.87 0-7-3.13-7-7 0-3.53 2.61-6.43 6-6.92V2.05c-5.06.5-9 4.76-9 9.95 0 5.52 4.47 10 9.99 10 3.31 0 6.24-1.61 8.06-4.09l-2.6-1.53C16.17 17.98 14.21 19 12 19z"/></svg>
+                <div class="entity-name">SYNC_LOG</div>
+            </div>
+            <div class="entity-fields">
+                <div class="field">id (PK)</div>
+                <div class="field">organization_id (FK)</div>
+                <div class="field">event_type</div>
+                <div class="field">payload</div>
+                <div class="field">message</div>
+                <div class="field">created_at</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
